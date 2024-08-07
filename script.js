@@ -6,8 +6,8 @@ let ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
-    dx: 2,
-    dy: -2
+    dx: 5,
+    dy: -5
 };
 
 // Paddle properties
@@ -145,8 +145,8 @@ function showGameOver(message) {
 function resetGame() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.dx = 2;
-    ball.dy = -2;
+    ball.dx = 5; // Reset to original speed
+    ball.dy = -5; // Reset to original speed
     paddle.x = (canvas.width - paddleWidth) / 2;
     paddle.y = canvas.height - paddleHeight - 10;
     score = 0;
@@ -224,6 +224,21 @@ function gameLoop() {
         gameLoopId = requestAnimationFrame(gameLoop);
     }
 }
+
+function cheatCommand(command) {
+    if (command === 'skip') {
+        advanceLevel();
+        console.log('Level skipped!');
+    }
+}
+
+// Listen for console commands
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const command = prompt('Enter cheat command:').trim().toLowerCase();
+        cheatCommand(command);
+    }
+});
 
 createTiles();
 gameLoop();
