@@ -153,8 +153,8 @@ function showGameOver(message) {
 function resetGame() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.dx = 3.5; // Reset to original speed
-    ball.dy = -3.5; // Reset to original speed
+    ball.dx = 4.0; // Reset to original speed
+    ball.dy = -3.0; // Reset to original speed
     paddle.x = (canvas.width - paddleWidth) / 2;
     paddle.y = canvas.height - paddleHeight - 10;
     score = 0;
