@@ -8,8 +8,8 @@ let ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
-    dx: 2,
-    dy: -2
+    dx: 3,
+    dy: -3
 };
 
 // Paddle properties
@@ -153,8 +153,8 @@ function showGameOver(message) {
 function resetGame() {
     ball.x = canvas.width / 2;
     ball.y = canvas.height / 2;
-    ball.dx = 2; // Reset to original speed
-    ball.dy = -2; // Reset to original speed
+    ball.dx = 3.5; // Reset to original speed
+    ball.dy = -3.5; // Reset to original speed
     paddle.x = (canvas.width - paddleWidth) / 2;
     paddle.y = canvas.height - paddleHeight - 10;
     score = 0;
