@@ -46,20 +46,30 @@ const tiles = [];
 const rowCount = 5;
 const columnCount = 7;
 
+let tilesLeft = rowCount * columnCount;
+let gameOver = false;
+let score = 0;
+let level = 1;
+let lives = 3; // Number of lives
+let levelTileRows = rowCount;
+let levelTileColumns = columnCount;
+
 function createTiles() {
-    for (let c = 0; c < columnCount; c++) {
+    tiles.length = 0; // Clear the tiles array
+    for (let c = 0; c < levelTileColumns; c++) {
         tiles[c] = [];
-        for (let r = 0; r < rowCount; r++) {
+        for (let r = 0; r < levelTileRows; r++) {
             const x = c * (tileWidth + tilePadding) + tileOffsetLeft;
             const y = r * (tileHeight + tilePadding) + tileOffsetTop;
             tiles[c][r] = { x, y, status: 1 };
         }
     }
+    tilesLeft = levelTileRows * levelTileColumns;
 }
 
 function drawTiles() {
-    for (let c = 0; c < columnCount; c++) {
-        for (let r = 0; r < rowCount; r++) {
+    for (let c = 0; c < levelTileColumns; c++) {
+        for (let r = 0; r < levelTileRows; r++) {
             if (tiles[c][r].status === 1) {
                 const { x, y } = tiles[c][r];
                 ctx.beginPath();
@@ -73,13 +83,15 @@ function drawTiles() {
 }
 
 function collisionDetection() {
-    for (let c = 0; c < columnCount; c++) {
-        for (let r = 0; r < rowCount; r++) {
+    for (let c = 0; c < levelTileColumns; c++) {
+        for (let r = 0; r < levelTileRows; r++) {
             const tile = tiles[c][r];
             if (tile.status === 1) {
                 if (ball.x > tile.x && ball.x < tile.x + tileWidth && ball.y > tile.y && ball.y < tile.y + tileHeight) {
                     ball.dy = -ball.dy;
                     tile.status = 0;
+                    tilesLeft--;
+                    score += 10; // Increase score for each tile hit
                 }
             }
         }
@@ -102,7 +114,57 @@ function drawPaddle() {
     ctx.closePath();
 }
 
+function drawScore() {
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'left';
+    ctx.fillText('Score: ' + score, 8, 20);
+}
+
+function drawLevel() {
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'right';
+    ctx.fillText('Level: ' + level, canvas.width - 8, 20);
+}
+
+function drawLives() {
+    ctx.font = '16px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText('Lives: ' + lives, canvas.width / 2, 20);
+}
+
+function showGameOver(message) {
+    ctx.font = '48px Arial';
+    ctx.fillStyle = '#ff0000';
+    ctx.textAlign = 'center';
+    ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+}
+
+function resetGame() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.dx = 2;
+    ball.dy = -2;
+    paddle.x = (canvas.width - paddleWidth) / 2;
+    paddle.y = canvas.height - paddleHeight - 10;
+    score = 0;
+    createTiles();
+}
+
+function advanceLevel() {
+    level++;
+    levelTileRows += 1; // Add more rows for the new level
+    levelTileColumns += 1; // Add more columns for the new level
+    resetGame(); // Reset the game state for the new level
+    ball.dx *= 1.1; // Increase ball speed slightly
+    ball.dy *= 1.1; // Increase ball speed slightly
+}
+
 function update() {
+    if (gameOver) return; // Stop updating if the game is over
+
     ball.x += ball.dx;
     ball.y += ball.dy;
 
@@ -117,11 +179,13 @@ function update() {
         if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
             ball.dy = -ball.dy;
         } else {
-            // Reset ball position if it falls below the paddle
-            ball.x = canvas.width / 2;
-            ball.y = canvas.height / 2;
-            ball.dx = 2;
-            ball.dy = -2;
+            lives--; // Decrease lives when the ball falls below the paddle
+            if (lives > 0) {
+                resetGame(); // Reset game state and allow the player to try again
+            } else {
+                gameOver = true;
+                showGameOver('Game Over! Final Score: ' + score);
+            }
         }
     }
 
@@ -134,6 +198,11 @@ function update() {
 
     // Tile collision detection
     collisionDetection();
+
+    // Check if the game is won
+    if (tilesLeft === 0) {
+        advanceLevel();
+    }
 }
 
 function draw() {
@@ -141,12 +210,19 @@ function draw() {
     drawTiles();
     drawBall();
     drawPaddle();
+    drawScore();
+    drawLevel();
+    drawLives();
     update();
 }
 
+let gameLoopId;
+
 function gameLoop() {
-    draw();
-    requestAnimationFrame(gameLoop);
+    if (!gameOver) {
+        draw();
+        gameLoopId = requestAnimationFrame(gameLoop);
+    }
 }
 
 createTiles();
