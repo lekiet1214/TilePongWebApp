@@ -1,5 +1,22 @@
+
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const gameOverVideo = document.getElementById('gameOverVideo');
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000'; // Set background color to black
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with black
+    drawTiles();
+    drawBall();
+    drawPaddle();
+    drawScore();
+    drawLevel();
+    drawLives();
+    update();
+}
+
 
 // Ball properties
 let ball = {
@@ -101,7 +118,7 @@ function collisionDetection() {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.fill();
     ctx.closePath();
 }
@@ -109,37 +126,43 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.fill();
     ctx.closePath();
 }
 
 function drawScore() {
     ctx.font = '16px Arial';
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.textAlign = 'left';
     ctx.fillText('Score: ' + score, 8, 20);
 }
 
 function drawLevel() {
     ctx.font = '16px Arial';
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.textAlign = 'right';
     ctx.fillText('Level: ' + level, canvas.width - 8, 20);
 }
 
 function drawLives() {
     ctx.font = '16px Arial';
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.textAlign = 'center';
     ctx.fillText('Lives: ' + lives, canvas.width / 2, 20);
 }
 
 function showGameOver(message) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = '48px Arial';
     ctx.fillStyle = '#ff0000';
     ctx.textAlign = 'center';
     ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+    
+    // Hide the canvas and show the video
+    canvas.style.display = 'none';
+    gameOverVideo.style.display = 'block';
+    gameOverVideo.play();
 }
 
 function resetGame() {
