@@ -1,30 +1,15 @@
-
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const gameOverVideo = document.getElementById('gameOverVideo');
-
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#000'; // Set background color to black
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with black
-    drawTiles();
-    drawBall();
-    drawPaddle();
-    drawScore();
-    drawLevel();
-    drawLives();
-    update();
-}
-
+const startButton = document.getElementById('startButton');
 
 // Ball properties
 let ball = {
     x: canvas.width / 2,
     y: canvas.height / 2,
     radius: 10,
-    dx: 5,
-    dy: -5
+    dx: 3,
+    dy: -3
 };
 
 // Paddle properties
@@ -118,7 +103,7 @@ function collisionDetection() {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#000'; // Set ball color to black
     ctx.fill();
     ctx.closePath();
 }
@@ -126,7 +111,7 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddle.x, paddle.y, paddle.width, paddle.height);
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#000'; // Set paddle color to black
     ctx.fill();
     ctx.closePath();
 }
@@ -230,6 +215,8 @@ function update() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff'; // Set background color to white
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill the canvas with white
     drawTiles();
     drawBall();
     drawPaddle();
@@ -248,20 +235,20 @@ function gameLoop() {
     }
 }
 
-function cheatCommand(command) {
-    if (command === 'skip') {
-        advanceLevel();
-        console.log('Level skipped!');
-    }
+function startGame() {
+    startButton.style.display = 'none';
+    canvas.style.display = 'block';
+    gameOverVideo.style.display = 'none';
+    resetGame();
+    createTiles();
+    gameLoop();
 }
 
-// Listen for console commands
+startButton.addEventListener('click', startGame);
+
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if (e.ctrlKey && e.key === 'l') {
         const command = prompt('Enter cheat command:').trim().toLowerCase();
         cheatCommand(command);
     }
 });
-
-createTiles();
-gameLoop();
